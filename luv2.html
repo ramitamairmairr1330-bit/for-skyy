@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>Love Cards Game</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Kanit', sans-serif;
+    overflow: hidden;
+    background: linear-gradient(135deg, #ffc0cb, #ffb6c1, #ff69b4);
+  }
+
+  /* หน้าเริ่มเกม */
+  #startScreen {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+  }
+
+  #startScreen h1 {
+    color: white;
+    font-size: 8vw;
+    text-align: center;
+  }
+
+  #startScreen button {
+    padding: 15px 40px;
+    font-size: 5vw;
+    border: none;
+    border-radius: 12px;
+    background: #ff4d88;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  /* หน้าเกม */
+  #gameScreen {
+    display: none;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    grid-gap: 15px;
+    justify-items: center;
+    align-items: center;
+  }
+
+  .card {
+    width: 100px;
+    aspect-ratio: 0.72;
+    perspective: 1000px;
+    cursor: pointer;
+  }
+
+  .card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.8s;
+    transform-style: preserve-3d;
+  }
+
+  .card.flipped .card-inner {
+    transform: rotateY(180deg);
+  }
+
+  .card-front, .card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    text-align: center;
+    font-weight: bold;
+    padding: 5px;
+    word-wrap: break-word;
+    overflow: hidden;
+  }
+
+  .card-front {
+    background: #ff4d88;
+    color: white;
+    font-size: 18px;
+  }
+
+  .card-back {
+    background: #fff0f5;
+    color: #ff1a75;
+    transform: rotateY(180deg);
+    font-size: 12px;
+    line-height: 1.2em;
+  }
+
+  .heart {
+    position: absolute;
+    font-size: 20px;
+    animation: floatUp 2s ease-out forwards;
+    pointer-events: none;
+  }
+
+  @keyframes floatUp {
+    0% { transform: translateY(0) scale(1); opacity: 1; }
+    100% { transform: translateY(-150px) scale(1.5); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- หน้าเริ่มเกม -->
+<div id="startScreen">
+  <h1>For Sky 💖</h1>
+  <button onclick="startGame()">Start</button>
+</div>
+
+<!-- หน้าเกม -->
+<div id="gameScreen"></div>
+
+<script>
+  let messages = [
+    "luv u💖",
+    "คิดถึงเบบี้มากก 🥺",
+    "อยากกอดดด ",
+    "You made my day",
+    "หวงที่สุดในโลกเวยย 🌍",
+    "รักแกมากมาก",
+    "ยิ้มหวานมานี่มา 💕",
+    "มาจุ้บมาเบบี้ 💓"
+  ];
+
+  const gameScreen = document.getElementById("gameScreen");
+  const startScreen = document.getElementById("startScreen");
+
+  function startGame() {
+    startScreen.style.display = "none";
+    gameScreen.style.display = "grid";
+    createCards(messages.length);
+  }
+
+  function createCards(count) {
+    const availableMessages = [...messages]; // คัดลอก array
+    for(let i=0; i<count; i++){
+      const card = document.createElement("div");
+      card.classList.add("card");
+
+      const inner = document.createElement("div");
+      inner.classList.add("card-inner");
+
+      const front = document.createElement("div");
+      front.classList.add("card-front");
+      front.textContent = "💌";
+
+      const back = document.createElement("div");
+      back.classList.add("card-back");
+      // กำหนดข้อความแต่ละใบไม่ซ้ำ
+      const randomIndex = Math.floor(Math.random() * availableMessages.length);
+      back.textContent = availableMessages[randomIndex];
+      availableMessages.splice(randomIndex,1); // เอาออกจาก array
+
+      inner.appendChild(front);
+      inner.appendChild(back);
+      card.appendChild(inner);
+
+      card.addEventListener("click", () => flipCard(card));
+
+      gameScreen.appendChild(card);
+    }
+  }
+
+  function flipCard(card) {
+    if(!card.classList.contains("flipped")){
+      card.classList.add("flipped");
+      createHearts(card);
+    }
+  }
+
+  function createHearts(card){
+    for(let i=0;i<3;i++){
+      const heart = document.createElement("div");
+      heart.classList.add("heart");
+      heart.textContent = "💖";
+
+      const rect = card.getBoundingClientRect();
+      heart.style.left = rect.left + rect.width/2 + (Math.random()*20-10) + "px";
+      heart.style.top = rect.top + "px";
+
+      document.body.appendChild(heart);
+      setTimeout(()=>heart.remove(),2000);
+    }
+  }
+</script>
+
+</body>
+</html>
